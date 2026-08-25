@@ -29,10 +29,11 @@ export function CierreFinal() {
         <p className="mt-4 text-tinta-suave">
           {negocio.nombre} · {negocio.ciudad}
         </p>
-        <p className="mt-6">
+        <p className="mt-3">
+          {/* Discreto a la vista, pero con área suficiente para atinarle con el dedo */}
           <Link
             href="/panel"
-            className="text-tinta-suave underline underline-offset-4 transition-colors hover:text-tinta"
+            className="inline-flex min-h-11 items-center px-3 text-tinta-suave underline underline-offset-4 transition-colors hover:text-tinta"
           >
             Entrar a mi tablero
           </Link>

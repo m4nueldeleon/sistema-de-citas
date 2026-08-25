@@ -55,6 +55,9 @@ export default function DisenoRaiz({ children }: { children: ReactNode }) {
   return (
     <html lang="es-MX">
       <head>
+        {/* Adelanta el saludo al servidor de tipografías: las letras cargan antes */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         {/* Aquí entran los colores de negocio.config.json y pintan todo el sitio */}
         <style dangerouslySetInnerHTML={{ __html: variablesDeMarca }} />
       </head>

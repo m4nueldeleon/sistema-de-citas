@@ -11,6 +11,12 @@ programar y no pagas nada por publicarlo.
 
 ---
 
+
+## Míralo funcionando
+
+- **Muestra en vivo:** https://sistema-de-citas-legendaria.vercel.app (el tablero abre con el código `1234`)
+- **La clase:** https://legendaria-sistema-citas.vercel.app
+
 ## Empieza en 3 pasos
 
 1. **Ponlo en línea** → [docs/INSTALAR.md](docs/INSTALAR.md)

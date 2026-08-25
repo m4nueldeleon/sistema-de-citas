@@ -41,7 +41,7 @@ function aCsv(citas: Cita[]): string {
       .join(","),
   );
 
-  // El BOM le dice a Excel que el archivo trae acentos.
+  // El BOM (\uFEFF) le dice a Excel que el archivo trae acentos.
   return "\uFEFF" + [encabezados.map(celda).join(","), ...filas].join("\r\n");
 }
 
@@ -53,12 +53,6 @@ function descargar(nombre: string, contenido: string, tipo: string): void {
   enlace.download = nombre;
   enlace.click();
   URL.revokeObjectURL(url);
-}
-
-/** Reemplaza todo lo guardado por lo que viene del respaldo. */
-function reemplazarTodo(nuevas: Cita[]): void {
-  leerCitas().forEach((c) => borrarCita(c.id));
-  nuevas.forEach((c) => guardarCita(c));
 }
 
 function esCita(valor: unknown): valor is Cita {
@@ -88,8 +82,19 @@ export function Datos({ citas, recargar }: { citas: Cita[]; recargar: () => void
   const [paso, setPaso] = useState<0 | 1 | 2>(0);
   const fecha = aClave(new Date());
 
+  function descargarRespaldo() {
+    descargar(
+      `respaldo-citas-${fecha}.json`,
+      JSON.stringify(citas, null, 2),
+      "application/json;charset=utf-8",
+    );
+    setError("");
+    setAviso("Guarda ese archivo en tu correo o en la nube. Esa es tu copia de seguridad.");
+  }
+
   function descargarCsv() {
     if (citas.length === 0) {
+      setAviso("");
       setError("Todavía no tienes citas que descargar.");
       return;
     }
@@ -98,26 +103,19 @@ export function Datos({ citas, recargar }: { citas: Cita[]; recargar: () => void
     setAviso("Descargué tus citas en un archivo que abre en Excel o en Google Sheets.");
   }
 
-  function descargarRespaldo() {
-    descargar(
-      `respaldo-citas-${fecha}.json`,
-      JSON.stringify(citas, null, 2),
-      "application/json;charset=utf-8",
-    );
-    setError("");
-    setAviso("Guarda ese archivo en tu correo o en la nube. Es tu copia de seguridad.");
-  }
-
   async function restaurar(entrada: HTMLInputElement) {
     const elegido = entrada.files?.[0];
     if (!elegido) return;
     try {
-      const crudo = JSON.parse(await elegido.text());
+      const crudo: unknown = JSON.parse(await elegido.text());
       if (!Array.isArray(crudo)) throw new Error("formato");
       const validas = crudo.filter(esCita).map(normalizar);
       if (validas.length === 0) throw new Error("vacío");
-      reemplazarTodo(validas);
+
+      leerCitas().forEach((c) => borrarCita(c.id));
+      validas.forEach((c) => guardarCita(c));
       recargar();
+
       setError("");
       setAviso(
         `Restauré ${validas.length} ${validas.length === 1 ? "cita" : "citas"} del respaldo. Lo que había antes se reemplazó.`,
@@ -125,7 +123,7 @@ export function Datos({ citas, recargar }: { citas: Cita[]; recargar: () => void
     } catch {
       setAviso("");
       setError(
-        "Ese archivo no es un respaldo de este sistema. Busca el que se llama respaldo-citas y termina en .json.",
+        "Ese archivo no es un respaldo de este sistema. Busca el que empieza con respaldo-citas y termina en .json.",
       );
     } finally {
       entrada.value = "";
@@ -141,63 +139,49 @@ export function Datos({ citas, recargar }: { citas: Cita[]; recargar: () => void
   }
 
   return (
-    <div className="space-y-8">
-      <section
-        aria-label="Dónde vive tu información"
-        className="rounded-2xl border p-5 sm:p-6"
-        style={{ borderColor: "var(--marca)" }}
-      >
-        <h2 className="text-xl font-semibold text-white sm:text-2xl">Léelo una vez y no lo olvides</h2>
-        <p className="mt-3 max-w-prose text-base leading-relaxed text-white/80">
-          Tus citas viven <strong className="text-white">solo en este navegador</strong>, en esta
-          computadora. No hay servidor ni base de datos. Si borras el historial, usas otra
-          computadora o entras desde el celular, no vas a ver estas citas.
+    <div className="space-y-6">
+      <section aria-label="Dónde vive tu información" className="rounded-tarjeta border border-marca p-5 sm:p-6">
+        <h2 className="text-xl sm:text-2xl">Léelo una vez y no se te olvide</h2>
+        <p className="mt-3 max-w-prose text-tinta-suave">
+          Tus citas viven <strong className="text-tinta">solo en este navegador</strong>, en esta
+          computadora. No hay servidor ni base de datos. Si borras el historial, si usas otra
+          computadora o si entras desde el celular, no vas a ver estas citas.
         </p>
-        <p className="mt-3 max-w-prose text-base leading-relaxed text-white/80">
-          Por eso: <strong className="text-white">descarga tu respaldo cada semana</strong> y
+        <p className="mt-3 max-w-prose text-tinta-suave">
+          Por eso: <strong className="text-tinta">descarga tu respaldo cada semana</strong> y
           guárdalo donde no se te pierda. Es lo único que te protege.
         </p>
       </section>
 
-      <section
-        aria-label="Descargar tu información"
-        className="rounded-2xl border border-white/10 bg-white/[0.04] p-5 sm:p-6"
-      >
-        <h2 className="text-xl font-semibold text-white sm:text-2xl">Llévate tu información</h2>
-        <p className="mt-2 max-w-prose text-base leading-relaxed text-white/70">
-          Tienes {citas.length} {citas.length === 1 ? "cita guardada" : "citas guardadas"}.
+      <section aria-label="Llevarte tu información" className="tarjeta p-5 sm:p-6">
+        <h2 className="text-xl sm:text-2xl">Llévate tu información</h2>
+        <p className="mt-2 max-w-prose text-tinta-suave">
+          Ahorita tienes {citas.length} {citas.length === 1 ? "cita guardada" : "citas guardadas"}.
         </p>
 
-        <div className="mt-5 flex flex-wrap gap-3">
+        <div className="mt-6 flex flex-wrap gap-3">
           <Boton onClick={descargarRespaldo}>Descargar respaldo</Boton>
-          <button
-            type="button"
-            onClick={descargarCsv}
-            className="inline-flex min-h-[48px] items-center rounded-2xl border border-white/15 px-5 text-base font-medium text-white transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acento)]"
-          >
+          <Boton variante="secundario" onClick={descargarCsv}>
             Descargar mis citas (Excel)
-          </button>
+          </Boton>
         </div>
 
-        <p className="mt-3 text-[15px] leading-relaxed text-white/55">
+        <p className="mt-4 text-[15px] leading-relaxed text-tinta-suave">
           El respaldo sirve para volver a cargar todo aquí. El de Excel sirve para verlo, filtrarlo
           o mandárselo a alguien.
         </p>
       </section>
 
-      <section
-        aria-label="Restaurar un respaldo"
-        className="rounded-2xl border border-white/10 bg-white/[0.04] p-5 sm:p-6"
-      >
-        <h2 className="text-xl font-semibold text-white sm:text-2xl">Restaurar un respaldo</h2>
-        <p className="mt-2 max-w-prose text-base leading-relaxed text-white/70">
-          Sube el archivo <strong className="text-white">respaldo-citas…json</strong> que
+      <section aria-label="Restaurar un respaldo" className="tarjeta p-5 sm:p-6">
+        <h2 className="text-xl sm:text-2xl">Restaurar un respaldo</h2>
+        <p className="mt-2 max-w-prose text-tinta-suave">
+          Sube el archivo <strong className="text-tinta">respaldo-citas….json</strong> que
           descargaste antes. Ojo: reemplaza todo lo que tengas ahora en este navegador.
         </p>
 
         <label
           htmlFor="respaldo"
-          className="mt-5 inline-flex min-h-[48px] cursor-pointer items-center rounded-2xl border border-white/15 px-5 text-base font-medium text-white transition hover:bg-white/10 focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-[var(--acento)]"
+          className="mt-6 inline-flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-full border border-borde px-6 text-[1.0625rem] font-semibold text-tinta transition hover:border-marca focus-within:outline-3 focus-within:outline-offset-3 focus-within:outline-acento"
         >
           Elegir el archivo del respaldo
           <input
@@ -214,19 +198,19 @@ export function Datos({ citas, recargar }: { citas: Cita[]; recargar: () => void
 
       <section
         aria-label="Borrar todo"
-        className="rounded-2xl border border-red-400/25 bg-red-500/[0.06] p-5 sm:p-6"
+        className="rounded-tarjeta border border-red-400/30 bg-red-500/[0.07] p-5 sm:p-6"
       >
-        <h2 className="text-xl font-semibold text-white sm:text-2xl">Borrar todo</h2>
-        <p className="mt-2 max-w-prose text-base leading-relaxed text-white/70">
+        <h2 className="text-xl sm:text-2xl">Borrar todo</h2>
+        <p className="mt-2 max-w-prose text-tinta-suave">
           Borra las {citas.length} citas de este navegador. No se puede deshacer.
         </p>
 
-        <div className="mt-5">
+        <div className="mt-6">
           {paso === 0 ? (
             <button
               type="button"
               onClick={() => setPaso(1)}
-              className="inline-flex min-h-[48px] items-center rounded-2xl border border-red-400/40 px-5 text-base font-medium text-red-200 transition hover:bg-red-500/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acento)]"
+              className="inline-flex min-h-12 cursor-pointer items-center rounded-full border border-red-400/40 px-6 text-[1.0625rem] font-semibold text-red-300 transition hover:bg-red-500/10"
             >
               Borrar todas mis citas
             </button>
@@ -234,59 +218,51 @@ export function Datos({ citas, recargar }: { citas: Cita[]; recargar: () => void
 
           {paso === 1 ? (
             <div>
-              <p className="text-base text-white">
+              <p className="text-tinta">
                 Antes de borrar: ¿ya descargaste tu respaldo? Si no, hazlo primero.
               </p>
-              <div className="mt-3 flex flex-wrap gap-2">
+              <div className="mt-4 flex flex-wrap gap-2">
                 <button
                   type="button"
                   onClick={() => setPaso(2)}
-                  className="inline-flex min-h-[48px] items-center rounded-2xl border border-red-400/40 px-5 text-base font-medium text-red-200 transition hover:bg-red-500/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acento)]"
+                  className="inline-flex min-h-12 cursor-pointer items-center rounded-full border border-red-400/40 px-6 text-[1.0625rem] font-semibold text-red-300 transition hover:bg-red-500/10"
                 >
                   Ya tengo mi respaldo, sigue
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setPaso(0)}
-                  className="inline-flex min-h-[48px] items-center rounded-2xl border border-white/15 px-5 text-base font-medium text-white transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acento)]"
-                >
+                <Boton variante="fantasma" onClick={() => setPaso(0)}>
                   Mejor no
-                </button>
+                </Boton>
               </div>
             </div>
           ) : null}
 
           {paso === 2 ? (
             <div>
-              <p className="text-base font-medium text-white">
+              <p className="font-medium text-tinta">
                 Última vez que te pregunto: esto borra las {citas.length} citas para siempre.
               </p>
-              <div className="mt-3 flex flex-wrap gap-2">
+              <div className="mt-4 flex flex-wrap gap-2">
                 <button
                   type="button"
                   onClick={borrarTodo}
-                  className="inline-flex min-h-[48px] items-center rounded-2xl bg-red-500 px-5 text-base font-semibold text-white transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acento)]"
+                  className="inline-flex min-h-12 cursor-pointer items-center rounded-full bg-red-500 px-6 text-[1.0625rem] font-semibold text-white transition hover:brightness-110"
                 >
                   Sí, borrar todo
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setPaso(0)}
-                  className="inline-flex min-h-[48px] items-center rounded-2xl border border-white/15 px-5 text-base font-medium text-white transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acento)]"
-                >
+                <Boton variante="fantasma" onClick={() => setPaso(0)}>
                   Cancelar
-                </button>
+                </Boton>
               </div>
             </div>
           ) : null}
         </div>
       </section>
 
-      <p aria-live="polite" className="min-h-[1.5rem] text-base font-medium text-white">
+      <p aria-live="polite" className="font-medium text-tinta empty:hidden">
         {aviso}
       </p>
       {error ? (
-        <p role="alert" className="text-base font-medium text-red-300">
+        <p role="alert" className="font-medium text-red-300">
           {error}
         </p>
       ) : null}

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
-import { Boton } from "@/components/ui/Boton";
+import Boton from "@/components/ui/Boton";
 import { buscarCita } from "@/lib/almacen";
 import { descargarIcs, ligaGoogleCalendar } from "@/lib/calendario";
 import { codificarCita } from "@/lib/codigo";
@@ -12,12 +12,9 @@ import { config } from "@/lib/negocio";
 import type { Cita } from "@/lib/tipos";
 import { ligaConfirmacion } from "@/lib/whatsapp";
 
-const VERDE = "#25D366";
-const TINTA_SOBRE_VERDE = "#08210F";
-
-const CAJA = "tarjeta rounded-3xl border border-white/10 bg-white/[0.03] p-5 sm:p-7";
-const ACCION =
-  "flex min-h-[3.5rem] items-center justify-center rounded-2xl border border-white/15 bg-white/[0.05] px-4 text-center text-base font-semibold text-white transition hover:border-white/35 hover:bg-white/[0.09] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--acento)] focus-visible:ring-offset-2 focus-visible:ring-offset-black";
+/* El verde de WhatsApp: la gente lo reconoce antes de leer el botón. */
+const VERDE = "#25d366";
+const TINTA_SOBRE_VERDE = "#07240f";
 
 function whatsappDelNegocio(mensaje: string): string {
   const numero = config.negocio.whatsapp.replace(/\D/g, "");
@@ -27,10 +24,10 @@ function whatsappDelNegocio(mensaje: string): string {
 function Esqueleto() {
   return (
     <div className="mx-auto w-full max-w-2xl" aria-hidden="true">
-      <div className="h-6 w-40 animate-pulse rounded-full bg-white/[0.07]" />
-      <div className="mt-4 h-10 w-3/4 animate-pulse rounded-2xl bg-white/[0.07]" />
-      <div className="mt-6 h-32 animate-pulse rounded-3xl bg-white/[0.05]" />
-      <div className="mt-6 h-40 animate-pulse rounded-3xl bg-white/[0.05]" />
+      <div className="h-5 w-40 animate-pulse rounded-full bg-superficie" />
+      <div className="mt-4 h-12 w-3/4 animate-pulse rounded-2xl bg-superficie" />
+      <div className="mt-6 h-32 animate-pulse rounded-2xl bg-superficie" />
+      <div className="mt-6 h-44 animate-pulse rounded-2xl bg-superficie" />
     </div>
   );
 }
@@ -38,15 +35,15 @@ function Esqueleto() {
 function NoEncontrada() {
   return (
     <div className="mx-auto w-full max-w-2xl">
-      <h1 className="text-2xl font-bold text-white sm:text-3xl">
-        Aquí no aparece tu cita
-      </h1>
-      <div className={`${CAJA} mt-6`}>
-        <p className="text-lg leading-relaxed text-white/80">
+      <h1 className="text-3xl sm:text-4xl">Aquí no aparece tu cita</h1>
+
+      <div className="tarjeta mt-6 p-5 sm:p-7">
+        <p className="text-[1.0625rem] leading-relaxed text-tinta-suave">
           Tu cita se guarda en el teléfono o la computadora donde la apartaste. Si abriste esta
-          página en otro aparato, en otro navegador, o si borraste los datos, ya no la vemos.
+          página en otro aparato, en otro navegador, o si borraste los datos de navegación, aquí ya
+          no la vemos.
         </p>
-        <p className="mt-4 text-lg leading-relaxed text-white/80">
+        <p className="mt-4 text-[1.0625rem] leading-relaxed text-tinta-suave">
           No pasa nada: escríbenos por WhatsApp y lo revisamos contigo en un minuto.
         </p>
         <div className="mt-6">
@@ -54,6 +51,8 @@ function NoEncontrada() {
             href={whatsappDelNegocio(
               "Hola, aparté una cita en la página pero se me perdió la confirmación. ¿Me ayudas a revisarla?",
             )}
+            tamano="lg"
+            nuevaPestana
           >
             Escribir por WhatsApp
           </Boton>
@@ -88,7 +87,7 @@ export function Confirmacion() {
       await navigator.clipboard.writeText(codigo);
       setCopiado(true);
     } catch {
-      // Algunos navegadores no dejan copiar sin permiso: el código sigue ahí para seleccionarlo.
+      // Hay navegadores que no dejan copiar solos: el código sigue ahí para seleccionarlo a mano.
       setCopiado(false);
     }
   }
@@ -100,31 +99,30 @@ export function Confirmacion() {
 
   return (
     <div className="aparecer mx-auto w-full max-w-2xl">
-      <p className="etiqueta text-sm font-semibold uppercase tracking-widest text-white/50">
+      <p className="text-sm font-semibold uppercase tracking-widest text-tinta-suave">
         Tu lugar quedó apartado
       </p>
-      <h1 className="titular mt-3 text-3xl font-bold leading-tight text-white sm:text-4xl">
-        {config.gracias.titulo}
-      </h1>
+      <h1 className="titular mt-3">{config.gracias.titulo}</h1>
 
-      <div className={`${CAJA} mt-6`}>
-        <p className="text-sm font-semibold uppercase tracking-widest text-white/50">Tu cita</p>
-        <p
-          className="mt-2 text-2xl font-bold capitalize leading-snug sm:text-3xl"
-          style={{ color: "var(--marca)" }}
-        >
+      <div className="tarjeta mt-7 p-5 sm:p-7">
+        <p className="text-sm font-semibold uppercase tracking-widest text-tinta-suave">Tu cita</p>
+        <p className="mt-2 font-display text-2xl font-semibold capitalize leading-snug text-marca sm:text-3xl">
           {textoLargo(cita.inicio)}
         </p>
-        <p className="mt-2 text-lg text-white/70">
+        <p className="mt-2 text-[1.0625rem] text-tinta-suave">
           {config.oferta.nombre} · {cita.duracionMinutos} minutos
         </p>
       </div>
 
+      {/* La acción más importante de toda la página: sin este mensaje, el negocio no se entera. */}
       <div
-        className="mt-6 rounded-3xl border p-5 sm:p-7"
-        style={{ borderColor: "rgba(37,211,102,0.35)", backgroundColor: "rgba(37,211,102,0.08)" }}
+        className="mt-6 rounded-tarjeta border p-5 sm:p-7"
+        style={{
+          borderColor: "color-mix(in oklab, #25d366 38%, transparent)",
+          backgroundColor: "color-mix(in oklab, #25d366 9%, transparent)",
+        }}
       >
-        <p className="text-xl font-bold text-white">
+        <p className="font-display text-xl font-semibold text-tinta sm:text-2xl">
           Falta un paso: avísale a {config.negocio.nombre}
         </p>
 
@@ -133,80 +131,78 @@ export function Confirmacion() {
           target="_blank"
           rel="noopener noreferrer"
           onClick={() => setAvisado(true)}
-          className="mt-5 flex min-h-[4.25rem] w-full items-center justify-center rounded-2xl px-5 text-center text-xl font-extrabold transition hover:brightness-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-black sm:text-2xl"
+          className="mt-5 flex min-h-[4.5rem] w-full items-center justify-center rounded-full px-5 text-center text-xl font-bold no-underline transition duration-150 hover:brightness-105 active:translate-y-px sm:text-2xl"
           style={{ backgroundColor: VERDE, color: TINTA_SOBRE_VERDE }}
         >
           Confirmar por WhatsApp
         </a>
 
-        <p className="mt-4 text-lg leading-relaxed text-white/85">
+        <p className="mt-4 text-[1.0625rem] leading-relaxed text-tinta">
           Con esto le llega tu cita al negocio. Es un toque, el mensaje ya va escrito.
         </p>
-        <p className="mt-3 text-base leading-relaxed text-white/60">
-          Esta página no se conecta sola con {config.negocio.nombre}. Tu cita quedó guardada en este
-          aparato, y el mensaje de WhatsApp es lo que la apunta en su agenda.
+        <p className="mt-3 text-base leading-relaxed text-tinta-suave">
+          Esta página no se conecta sola con {config.negocio.nombre}: tu cita quedó guardada en este
+          aparato y el mensaje de WhatsApp es lo que la apunta en su agenda.
         </p>
 
         {avisado ? (
-          <p role="status" className="mt-4 text-base text-white/70">
+          <p role="status" className="mt-4 text-base text-tinta-suave">
             Si WhatsApp no se abrió, vuelve a tocar el botón verde.
           </p>
         ) : null}
       </div>
 
-      <div className={`${CAJA} mt-6`}>
-        <p className="text-xl font-bold text-white">Agrega la cita a tu calendario</p>
-        <p className="mt-2 text-lg text-white/70">Para que tu teléfono te avise a tiempo.</p>
+      <div className="tarjeta mt-6 p-5 sm:p-7">
+        <p className="font-display text-xl font-semibold text-tinta">
+          Agrega la cita a tu calendario
+        </p>
+        <p className="mt-2 text-[1.0625rem] text-tinta-suave">
+          Para que tu teléfono te avise a tiempo.
+        </p>
+
         <div className="mt-5 grid gap-3 sm:grid-cols-2">
-          <a
-            href={ligaGoogleCalendar(cita)}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={ACCION}
-          >
+          <Boton variante="secundario" href={ligaGoogleCalendar(cita)} nuevaPestana anchoCompleto>
             Google Calendar
-          </a>
-          <button type="button" onClick={() => descargarIcs(cita)} className={ACCION}>
+          </Boton>
+          <Boton variante="secundario" onClick={() => descargarIcs(cita)} anchoCompleto>
             Descargar el archivo
-          </button>
+          </Boton>
         </div>
-        <p className="mt-4 text-base text-white/55">
-          El archivo sirve para iPhone, Outlook y casi cualquier calendario.
+
+        <p className="mt-4 text-base text-tinta-suave">
+          El archivo sirve para iPhone, Outlook y casi cualquier otro calendario.
         </p>
       </div>
 
-      <div className={`${CAJA} mt-6`}>
-        <p className="text-xl font-bold text-white">Qué sigue</p>
-        <p className="mt-3 text-lg leading-relaxed text-white/75">{config.gracias.mensaje}</p>
+      <div className="tarjeta mt-6 p-5 sm:p-7">
+        <p className="font-display text-xl font-semibold text-tinta">Qué sigue</p>
+        <p className="mt-3 text-[1.0625rem] leading-relaxed text-tinta-suave">
+          {config.gracias.mensaje}
+        </p>
+
         <ol className="mt-5 space-y-4">
           {config.gracias.pasos.map((paso, i) => (
             <li key={paso} className="flex gap-4">
-              <span
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-base font-bold"
-                style={{
-                  backgroundColor: "color-mix(in srgb, var(--marca) 20%, transparent)",
-                  color: "var(--marca)",
-                }}
-              >
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-full border border-marca text-base font-semibold text-marca">
                 {i + 1}
               </span>
-              <span className="pt-1 text-lg leading-relaxed text-white/85">{paso}</span>
+              <span className="pt-1 text-[1.0625rem] leading-relaxed text-tinta">{paso}</span>
             </li>
           ))}
         </ol>
       </div>
 
-      <div className="mt-8 rounded-2xl border border-white/10 bg-black/25 p-4">
-        <p className="text-base text-white/55">
+      <div className="mt-8 rounded-2xl border border-borde p-4">
+        <p className="text-base text-tinta-suave">
           Código de tu cita, por si hay que mandarlo a mano:
         </p>
-        <code className="mt-2 block select-all break-all font-mono text-xs leading-relaxed text-white/70">
+        <code className="mt-2 block break-all select-all font-mono text-xs leading-relaxed text-tinta-suave">
           {codigo}
         </code>
         <button
           type="button"
           onClick={() => void copiarCodigo(codigo)}
-          className="mt-3 inline-flex min-h-[2.75rem] items-center rounded-xl border border-white/15 px-4 text-base font-medium text-white/80 transition hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--acento)]"
+          className="mt-3 inline-flex min-h-11 items-center rounded-full border border-borde px-4 text-base font-medium text-tinta-suave transition hover:border-marca hover:text-tinta"
         >
           {copiado ? "Copiado" : "Copiar código"}
         </button>

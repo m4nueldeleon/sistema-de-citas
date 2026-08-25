@@ -1,5 +1,11 @@
-@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:wght@400..700&family=Inter:wght@400..700&display=swap");
 @import "tailwindcss";
+
+/* Las dos tipografías van arriba de todo: el navegador exige que los @import
+   sean las primeras líneas del archivo. Se piden como fuentes variables
+   (400..700, así pesan menos). No le agregues el eje "opsz" a la liga:
+   con ese eje el compilador de Next se come la línea y el sitio se queda
+   sin fuentes sin avisar. */
 
 /* ============================================================
    LOS COLORES DE TU NEGOCIO NO SE CAMBIAN AQUÍ
@@ -29,6 +35,9 @@
   --fondo: #100e0b;
   --superficie: #1a1611;
   --borde: #2e271d;
+  /* El borde de las cajas de escribir va más claro a propósito: si no se ve
+     el recuadro, la gente no sabe dónde escribir. Cumple contraste 3:1. */
+  --borde-campo: #6f6454;
   --tinta: #f6f1e7;
   --tinta-suave: #a79b87;
 
@@ -48,6 +57,7 @@
   --color-fondo: var(--fondo);
   --color-superficie: var(--superficie);
   --color-borde: var(--borde);
+  --color-borde-campo: var(--borde-campo);
   --color-tinta: var(--tinta);
   --color-tinta-suave: var(--tinta-suave);
   --color-marca: var(--marca);
@@ -177,13 +187,13 @@
     line-height: 1.4;
     color: var(--tinta);
     background-color: color-mix(in oklab, var(--fondo) 78%, #000 22%);
-    border: 1px solid var(--borde);
+    border: 1px solid var(--borde-campo);
     border-radius: 12px;
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
   }
 
   .campo::placeholder {
-    color: color-mix(in oklab, var(--tinta-suave) 72%, transparent);
+    color: color-mix(in oklab, var(--tinta-suave) 88%, transparent);
   }
 
   .campo:focus {
@@ -201,7 +211,7 @@
   select.campo {
     appearance: none;
     padding-right: 42px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a79b87' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23bdb3a0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 14px center;
     background-size: 20px 20px;

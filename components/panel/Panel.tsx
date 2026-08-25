@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { Boton } from "@/components/ui/Boton";
 import { Marca } from "@/components/ui/Marca";
 import { config } from "@/lib/negocio";
 import { aClave, esHoy, ordenarPorFecha } from "@/lib/fechas";
@@ -21,7 +22,7 @@ const PESTANAS: { id: Pestana; nombre: string }[] = [
   { id: "datos", nombre: "Datos" },
 ];
 
-/** La etapa que representa una venta cerrada, sin importar cómo la haya nombrado el negocio. */
+/** La etapa que significa "ya me compró", sin importar cómo la haya nombrado el negocio. */
 function etapaDeVenta() {
   const etapas = config.crm.etapas;
   return (
@@ -65,7 +66,7 @@ export function Panel() {
   if (!listo) {
     return (
       <main className="flex min-h-[100svh] items-center justify-center px-5">
-        <p className="text-base text-white/50">Abriendo tu panel…</p>
+        <p className="text-tinta-suave">Abriendo tu panel…</p>
       </main>
     );
   }
@@ -82,35 +83,31 @@ export function Panel() {
   }
 
   return (
-    <div className="min-h-[100svh] pb-20">
-      <header className="sticky top-0 z-30 border-b border-white/10 bg-black/60 backdrop-blur-xl">
-        <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
-          <Marca />
-          <div className="flex items-center gap-2">
-            <a
-              href="/"
-              className="hidden min-h-[44px] items-center rounded-xl px-3 text-base text-white/65 underline underline-offset-4 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acento)] sm:inline-flex"
-            >
-              Ver mi página
-            </a>
-            <button
-              type="button"
+    <div className="min-h-[100svh] pb-24">
+      <header className="sticky top-0 z-30 border-b border-borde bg-fondo/85 backdrop-blur-xl">
+        <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
+          <Marca tamano="sm" />
+          <div className="flex items-center gap-1 sm:gap-2">
+            <span className="hidden sm:inline-flex">
+              <Boton href="/" variante="fantasma">
+                Ver mi página
+              </Boton>
+            </span>
+            <Boton
+              variante="secundario"
               onClick={() => {
                 cerrarPanel();
                 setAbierto(false);
               }}
-              className="inline-flex min-h-[44px] items-center rounded-xl border border-white/15 px-4 text-base font-medium text-white/85 transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acento)]"
             >
               Salir
-            </button>
+            </Boton>
           </div>
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 sm:py-8">
-        <h1 className="text-2xl font-semibold text-white sm:text-3xl">
-          Hola. Esto es lo que traes.
-        </h1>
+      <main className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-6 sm:py-9">
+        <h1 className="text-2xl sm:text-3xl">Esto es lo que traes</h1>
 
         <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
           <Numero titulo="Citas de hoy" valor={numeros.hoy} destacado />
@@ -122,9 +119,9 @@ export function Panel() {
           />
         </div>
 
-        <nav aria-label="Secciones del panel" className="mt-7">
+        <nav aria-label="Secciones del panel" className="mt-8">
           <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
-            <div className="flex w-max gap-2 rounded-2xl border border-white/10 bg-white/[0.03] p-1.5 sm:w-full">
+            <div className="flex w-max gap-1 rounded-full border border-borde bg-superficie p-1.5 sm:w-full">
               {PESTANAS.map((p) => {
                 const activa = p.id === pestana;
                 return (
@@ -134,10 +131,11 @@ export function Panel() {
                     aria-current={activa ? "page" : undefined}
                     onClick={() => setPestana(p.id)}
                     className={
-                      "min-h-[44px] flex-1 whitespace-nowrap rounded-xl px-5 text-base font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acento)] " +
-                      (activa ? "text-black" : "text-white/70 hover:bg-white/10 hover:text-white")
+                      "min-h-11 flex-1 cursor-pointer whitespace-nowrap rounded-full px-6 text-[1.0625rem] font-semibold transition " +
+                      (activa
+                        ? "bg-marca text-sobre-marca"
+                        : "text-tinta-suave hover:bg-borde hover:text-tinta")
                     }
-                    style={activa ? { backgroundColor: "var(--marca)" } : undefined}
                   >
                     {p.nombre}
                   </button>
@@ -147,7 +145,7 @@ export function Panel() {
           </div>
         </nav>
 
-        <div className="aparecer mt-6" key={pestana}>
+        <div key={pestana} className="aparecer mt-7">
           {pestana === "hoy" ? <Hoy citas={citas} /> : null}
           {pestana === "citas" ? <Tablero citas={citas} recargar={recargar} /> : null}
           {pestana === "agregar" ? <Pegar recargar={recargar} /> : null}
@@ -170,18 +168,16 @@ function Numero({
   className?: string;
 }) {
   return (
-    <div
-      className={
-        "rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-4 " + (className ?? "")
-      }
-    >
+    <div className={["tarjeta px-4 py-4 sm:px-5", className ?? ""].join(" ")}>
       <p
-        className="text-4xl font-semibold tabular-nums text-white sm:text-5xl"
-        style={{ color: destacado ? "var(--marca)" : undefined }}
+        className={
+          "font-display text-4xl font-semibold tabular-nums sm:text-5xl " +
+          (destacado ? "text-marca" : "text-tinta")
+        }
       >
         {valor}
       </p>
-      <p className="mt-1 text-base leading-snug text-white/65">{titulo}</p>
+      <p className="mt-1 text-base leading-snug text-tinta-suave">{titulo}</p>
     </div>
   );
 }

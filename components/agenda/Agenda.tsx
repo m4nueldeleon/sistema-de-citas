@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
-import { Boton } from "@/components/ui/Boton";
+import Boton from "@/components/ui/Boton";
 import { guardarCita, horariosOcupados, nuevoId } from "@/lib/almacen";
 import { diasDisponibles, textoCorto, textoHora } from "@/lib/fechas";
 import { config } from "@/lib/negocio";
@@ -15,12 +15,6 @@ import { SelectorDia, type DiaDisponible } from "./SelectorDia";
 import { SelectorHora } from "./SelectorHora";
 
 type Paso = 1 | 2 | 3;
-
-/** El color de marca es claro, así que encima va tinta oscura para que se lea. */
-const TINTA_SOBRE_MARCA = "#141210";
-
-const CAJA =
-  "tarjeta mx-auto w-full max-w-2xl rounded-3xl border border-white/10 bg-white/[0.03] p-5 sm:p-8";
 
 const TITULOS: Record<Paso, string> = {
   1: "Elige el día que te acomoda",
@@ -43,13 +37,16 @@ function origenDeLaDireccion(): string {
 
 function validar(campos: Campo[], valores: Record<string, string>): Record<string, string> {
   const errores: Record<string, string> = {};
+
   for (const campo of campos) {
     const valor = (valores[campo.id] ?? "").trim();
+
     if (campo.requerido && !valor) {
       errores[campo.id] = "Este dato nos hace falta para apartar tu lugar.";
       continue;
     }
     if (!valor) continue;
+
     if (campo.tipo === "tel" && valor.replace(/\D/g, "").length < 10) {
       errores[campo.id] = "Escribe tu número completo con lada, son 10 dígitos.";
     }
@@ -57,6 +54,7 @@ function validar(campos: Campo[], valores: Record<string, string>): Record<strin
       errores[campo.id] = "Revisa tu correo. Debe verse así: nombre@correo.com";
     }
   }
+
   return errores;
 }
 
@@ -69,9 +67,9 @@ function vistaActual(paso: Paso, hayDia: boolean, hayHora: boolean): Paso {
 
 function Dato({ etiqueta, valor }: { etiqueta: string; valor: string }) {
   return (
-    <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-4 py-2 text-sm">
-      <span className="text-white/50">{etiqueta}</span>
-      <span className="font-semibold capitalize text-white">{valor}</span>
+    <span className="inline-flex items-center gap-2 rounded-full border border-borde bg-superficie px-4 py-2 text-sm">
+      <span className="text-tinta-suave">{etiqueta}</span>
+      <span className="font-semibold capitalize text-tinta">{valor}</span>
     </span>
   );
 }
@@ -92,21 +90,22 @@ export function Agenda() {
 
   const encabezado = useRef<HTMLHeadingElement>(null);
 
-  // Los horarios viven en el navegador: se calculan ya montada la página para no
-  // romper la hidratación (el servidor no puede saber qué hay guardado aquí).
+  // Los horarios apartados viven en este navegador. Se calculan ya montada la
+  // página para que el servidor y el navegador pinten lo mismo al arrancar.
   useEffect(() => {
     setDias(diasDisponibles(horariosOcupados()));
     setOrigen(origenDeLaDireccion());
   }, []);
 
   const diaActivo = useMemo(
-    () => dias?.find((d) => d.clave === claveDia) ?? null,
+    () => dias?.find((dia) => dia.clave === claveDia) ?? null,
     [dias, claveDia],
   );
 
   const vista = vistaActual(paso, Boolean(diaActivo), Boolean(inicio));
   const vistaAnterior = useRef<Paso>(vista);
 
+  // Al cambiar de paso, el lector de pantalla y el teclado se van al título nuevo.
   useEffect(() => {
     if (vistaAnterior.current === vista) return;
     vistaAnterior.current = vista;
@@ -156,7 +155,7 @@ export function Agenda() {
     // Alguien pudo apartar ese horario mientras la persona llenaba sus datos.
     if (horariosOcupados().includes(inicio)) {
       const frescos = diasDisponibles(horariosOcupados());
-      const sigueElDia = frescos.some((d) => d.clave === claveDia);
+      const sigueElDia = frescos.some((dia) => dia.clave === claveDia);
       setDias(frescos);
       setInicio(null);
       if (!sigueElDia) setClaveDia(null);
@@ -182,6 +181,7 @@ export function Agenda() {
       notas: [],
       origen,
     };
+
     guardarCita(cita);
     void avisarWebhook(cita);
     router.push(`/gracias?id=${cita.id}`);
@@ -191,146 +191,136 @@ export function Agenda() {
   const sinLugares = dias !== null && dias.length === 0;
 
   return (
-    <div id="agenda" className="scroll-mt-24">
-      <div className={CAJA}>
-        <div className="flex items-center justify-between gap-4">
-          {vista > 1 ? (
-            <button
-              type="button"
-              onClick={atras}
-              className="-ml-2 inline-flex min-h-[2.75rem] items-center gap-2 rounded-xl px-2 text-base font-medium text-white/70 transition hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--acento)]"
-            >
-              <span aria-hidden="true">←</span> Atrás
-            </button>
-          ) : (
-            <span />
-          )}
-          <p className="etiqueta text-sm font-semibold uppercase tracking-widest text-white/50">
-            Paso {vista} de 3
-          </p>
-        </div>
-
-        <div className="mt-3 flex gap-1.5" aria-hidden="true">
-          {[1, 2, 3].map((n) => (
-            <span
-              key={n}
-              className="h-1.5 flex-1 rounded-full transition"
-              style={{
-                backgroundColor: n <= vista ? "var(--marca)" : "rgba(255,255,255,0.14)",
-              }}
-            />
-          ))}
-        </div>
-
-        <h2
-          ref={encabezado}
-          tabIndex={-1}
-          className="mt-5 text-2xl font-bold text-white outline-none sm:text-3xl"
-        >
-          {sinLugares ? "Por ahora no hay horarios abiertos" : TITULOS[vista]}
-        </h2>
-
-        <p className="sr-only" aria-live="polite">
-          Paso {vista} de 3: {TITULOS[vista]}
+    <div className="tarjeta mx-auto w-full max-w-2xl p-5 sm:p-8">
+      <div className="flex min-h-[2.75rem] items-center justify-between gap-4">
+        {vista > 1 ? (
+          <Boton variante="fantasma" onClick={atras}>
+            <span aria-hidden="true">←</span> Atrás
+          </Boton>
+        ) : (
+          <span />
+        )}
+        <p className="text-sm font-semibold uppercase tracking-widest text-tinta-suave">
+          Paso {vista} de 3
         </p>
+      </div>
 
-        {(diaActivo || inicio) && !sinLugares ? (
-          <div className="mt-4 flex flex-wrap gap-2">
-            {diaActivo ? <Dato etiqueta="Día" valor={textoCorto(diaActivo.horarios[0])} /> : null}
-            {inicio ? <Dato etiqueta="Hora" valor={textoHora(inicio)} /> : null}
-          </div>
-        ) : null}
+      <div className="mt-3 flex gap-1.5" aria-hidden="true">
+        {[1, 2, 3].map((n) => (
+          <span
+            key={n}
+            className={`h-1.5 flex-1 rounded-full ${n <= vista ? "bg-marca" : "bg-borde"}`}
+          />
+        ))}
+      </div>
 
-        {aviso ? (
-          <p
-            role="alert"
-            className="mt-4 rounded-2xl border border-amber-300/30 bg-amber-300/10 px-4 py-3 text-base text-amber-100"
-          >
-            {aviso}
-          </p>
-        ) : null}
+      <h2
+        ref={encabezado}
+        tabIndex={-1}
+        className="mt-5 text-2xl outline-none sm:text-3xl"
+      >
+        {sinLugares ? "Por ahora no hay horarios abiertos" : TITULOS[vista]}
+      </h2>
 
-        <div className="aparecer mt-6">
-          {cargando ? (
-            <div className="flex gap-3 overflow-hidden" aria-hidden="true">
-              {[0, 1, 2, 3].map((n) => (
-                <div
-                  key={n}
-                  className="h-[5.75rem] min-w-[8.75rem] shrink-0 animate-pulse rounded-2xl bg-white/[0.06]"
-                />
-              ))}
-            </div>
-          ) : sinLugares ? (
-            <div>
-              <p className="text-lg text-white/75">
-                Se llenaron los espacios de los próximos días. Escríbeme por WhatsApp y buscamos un
-                hueco entre los dos.
-              </p>
-              <div className="mt-5">
-                <Boton
-                  href={whatsappDelNegocio(
-                    `Hola, quiero apartar una ${config.oferta.nombre.toLowerCase()} pero no veo horarios libres. ¿Qué día tienes?`,
-                  )}
-                >
-                  Escribirle a {config.negocio.nombre}
-                </Boton>
-              </div>
-            </div>
-          ) : vista === 1 ? (
-            <>
-              <p className="mb-4 text-lg text-white/70">
-                {config.oferta.nombre} · {config.agenda.duracionMinutos} minutos ·{" "}
-                {config.oferta.precioTexto}
-              </p>
-              <SelectorDia dias={dias ?? []} claveActiva={claveDia} alElegir={elegirDia} />
-            </>
-          ) : vista === 2 && diaActivo ? (
-            <>
-              <p className="mb-4 text-lg text-white/70">
-                Horarios libres del{" "}
-                <span className="capitalize text-white">{textoCorto(diaActivo.horarios[0])}</span>.
-                Cada cita dura {config.agenda.duracionMinutos} minutos.
-              </p>
-              <SelectorHora horarios={diaActivo.horarios} activo={inicio} alElegir={elegirHora} />
-            </>
-          ) : (
-            <form onSubmit={enviar} noValidate>
-              <p className="mb-5 text-lg text-white/70">
-                Con esto apartamos tu lugar. No hay que crear cuenta ni contraseña.
-              </p>
+      <p className="sr-only" aria-live="polite">
+        Paso {vista} de 3: {TITULOS[vista]}
+      </p>
 
-              {Object.keys(errores).length > 0 ? (
-                <p
-                  role="alert"
-                  className="mb-5 rounded-2xl border border-red-400/30 bg-red-400/10 px-4 py-3 text-base text-red-100"
-                >
-                  Revisa los datos marcados en rojo y volvemos a intentar.
-                </p>
-              ) : null}
-
-              <Formulario
-                campos={campos}
-                valores={respuestas}
-                errores={errores}
-                alCambiar={cambiarCampo}
-              />
-
-              <button
-                type="submit"
-                disabled={enviando}
-                className="mt-7 flex min-h-[3.75rem] w-full items-center justify-center rounded-2xl px-6 text-lg font-bold transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--acento)] focus-visible:ring-offset-2 focus-visible:ring-offset-black disabled:cursor-not-allowed disabled:opacity-60"
-                style={{ backgroundColor: "var(--marca)", color: TINTA_SOBRE_MARCA }}
-              >
-                {enviando ? "Apartando tu lugar…" : "Apartar mi lugar"}
-              </button>
-
-              <p className="mt-4 text-sm leading-relaxed text-white/55">
-                Al apartar, abrimos una pantalla para que mandes el aviso por WhatsApp. Ese mensaje
-                es el que le avisa a {config.negocio.nombre} que vas.
-              </p>
-            </form>
-          )}
+      {(diaActivo || inicio) && !sinLugares ? (
+        <div className="mt-4 flex flex-wrap gap-2">
+          {diaActivo ? <Dato etiqueta="Día" valor={textoCorto(diaActivo.horarios[0])} /> : null}
+          {inicio ? <Dato etiqueta="Hora" valor={textoHora(inicio)} /> : null}
         </div>
+      ) : null}
+
+      {aviso ? (
+        <p
+          role="alert"
+          className="mt-4 rounded-2xl border border-amber-300/40 bg-amber-300/10 px-4 py-3 text-base text-amber-100"
+        >
+          {aviso}
+        </p>
+      ) : null}
+
+      <div className="mt-6">
+        {cargando ? (
+          <div className="flex gap-3 overflow-hidden" aria-hidden="true">
+            {[0, 1, 2, 3].map((n) => (
+              <div
+                key={n}
+                className="h-[5.75rem] min-w-[8.75rem] shrink-0 animate-pulse rounded-2xl border border-borde bg-superficie"
+              />
+            ))}
+          </div>
+        ) : sinLugares ? (
+          <div className="aparecer">
+            <p className="text-[1.0625rem] leading-relaxed text-tinta-suave">
+              Se llenaron los espacios de los próximos días. Escríbeme por WhatsApp y buscamos un
+              hueco entre los dos.
+            </p>
+            <div className="mt-6">
+              <Boton
+                href={whatsappDelNegocio(
+                  `Hola, quiero apartar una ${config.oferta.nombre.toLowerCase()} pero no veo horarios libres. ¿Qué día tienes?`,
+                )}
+                tamano="lg"
+                nuevaPestana
+              >
+                Escribirle a {config.negocio.nombre}
+              </Boton>
+            </div>
+          </div>
+        ) : vista === 1 ? (
+          <div className="aparecer">
+            <p className="mb-4 text-[1.0625rem] text-tinta-suave">
+              {config.oferta.nombre} · {config.agenda.duracionMinutos} minutos ·{" "}
+              {config.oferta.precioTexto}
+            </p>
+            <SelectorDia dias={dias ?? []} claveActiva={claveDia} alElegir={elegirDia} />
+          </div>
+        ) : vista === 2 && diaActivo ? (
+          <div className="aparecer">
+            <p className="mb-4 text-[1.0625rem] text-tinta-suave">
+              Horarios libres del{" "}
+              <span className="capitalize text-tinta">{textoCorto(diaActivo.horarios[0])}</span>.
+              Cada cita dura {config.agenda.duracionMinutos} minutos.
+            </p>
+            <SelectorHora horarios={diaActivo.horarios} activo={inicio} alElegir={elegirHora} />
+          </div>
+        ) : (
+          <form onSubmit={enviar} noValidate className="aparecer">
+            <p className="mb-5 text-[1.0625rem] text-tinta-suave">
+              Con esto apartamos tu lugar. No hay que crear cuenta ni contraseña.
+            </p>
+
+            {Object.keys(errores).length > 0 ? (
+              <p
+                role="alert"
+                className="mb-5 rounded-2xl border border-red-400/40 bg-red-400/10 px-4 py-3 text-base text-red-100"
+              >
+                Revisa los datos marcados en rojo y lo intentamos de nuevo.
+              </p>
+            ) : null}
+
+            <Formulario
+              campos={campos}
+              valores={respuestas}
+              errores={errores}
+              alCambiar={cambiarCampo}
+            />
+
+            <div className="mt-7">
+              <Boton tipo="submit" tamano="lg" anchoCompleto deshabilitado={enviando}>
+                {enviando ? "Apartando tu lugar…" : "Apartar mi lugar"}
+              </Boton>
+            </div>
+
+            <p className="mt-4 text-sm leading-relaxed text-tinta-suave">
+              Al apartar, abrimos una pantalla para que mandes el aviso por WhatsApp. Ese mensaje es
+              el que le avisa a {config.negocio.nombre} que vas.
+            </p>
+          </form>
+        )}
       </div>
     </div>
   );

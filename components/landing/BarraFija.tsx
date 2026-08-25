@@ -1,20 +1,31 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Boton from "@/components/ui/Boton";
 import { config } from "@/lib/negocio";
 
 export function BarraFija() {
+  const barra = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    // La barra estorba en la portada y sobra cuando ya estás viendo la agenda:
-    // solo sale en el tramo de en medio.
+    const enPantalla = (e: Element | null | undefined) => {
+      if (!e) return false;
+      const c = e.getBoundingClientRect();
+      return c.top < window.innerHeight * 0.85 && c.bottom > 0;
+    };
+
+    // La barra solo sirve en el tramo de en medio: estorba en la portada y sobra
+    // cuando la persona ya tiene enfrente la agenda o alguno de los botones reales.
     const revisar = () => {
-      const agenda = document.getElementById("agenda");
-      const caja = agenda?.getBoundingClientRect();
-      const agendaALaVista = !!caja && caja.top < window.innerHeight * 0.85 && caja.bottom > 0;
-      setVisible(window.scrollY > 420 && !agendaALaVista);
+      const otrosBotones = Array.from(
+        document.querySelectorAll('a[href="#agenda"]'),
+      ).filter((a) => !barra.current?.contains(a));
+
+      const yaLoTieneEnfrente =
+        enPantalla(document.getElementById("agenda")) || otrosBotones.some(enPantalla);
+
+      setVisible(window.scrollY > 420 && !yaLoTieneEnfrente);
     };
 
     revisar();
@@ -34,6 +45,7 @@ export function BarraFija() {
       <div aria-hidden className="h-24 sm:hidden" />
 
       <div
+        ref={barra}
         aria-hidden={!visible}
         className={[
           "fixed inset-x-0 bottom-0 z-40 px-3 pt-3 sm:hidden",
@@ -45,7 +57,7 @@ export function BarraFija() {
         <div className="vidrio flex items-center gap-3 p-3 shadow-[0_-14px_40px_-18px_rgb(0_0_0/0.9)]">
           <div className="min-w-0 flex-1">
             <p className="truncate font-semibold leading-snug">{oferta.nombre}</p>
-            <p className="truncate text-tinta-suave leading-snug">
+            <p className="truncate leading-snug text-tinta-suave">
               {oferta.duracionMinutos} min · {oferta.precioTexto}
             </p>
           </div>

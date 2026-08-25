@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Boton } from "@/components/ui/Boton";
 import { config } from "@/lib/negocio";
 import { esHoy, ordenarPorFecha, textoHora } from "@/lib/fechas";
 import { ligaSeguimiento, textoRecordatorio } from "@/lib/whatsapp";
@@ -21,7 +22,7 @@ export function Hoy({ citas }: { citas: Cita[] }) {
 
   return (
     <section aria-label="Tu agenda de hoy">
-      <h2 className="text-xl font-semibold text-white sm:text-2xl">
+      <h2 className="text-xl sm:text-2xl">
         {deHoy.length === 1 ? "Tienes 1 cita hoy" : `Tienes ${deHoy.length} citas hoy`}
       </h2>
 
@@ -32,50 +33,38 @@ export function Hoy({ citas }: { citas: Cita[] }) {
           const recordatorio = ligaSeguimiento(cita, textoRecordatorio(cita));
 
           return (
-            <li
-              key={cita.id}
-              className="rounded-2xl border border-white/10 bg-white/[0.04] p-4 sm:p-5"
-            >
+            <li key={cita.id} className="tarjeta p-4 sm:p-5">
               <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                <p
-                  className="text-2xl font-semibold tabular-nums"
-                  style={{ color: "var(--marca)" }}
-                >
+                <p className="font-display text-2xl font-semibold tabular-nums text-marca">
                   {textoHora(cita.inicio)}
                 </p>
-                <p className="text-lg font-medium text-white">{nombre}</p>
+                <p className="text-lg font-medium text-tinta">{nombre}</p>
               </div>
 
-              <p className="mt-1 text-base text-white/60">
+              <p className="mt-1 text-tinta-suave">
                 {cita.duracionMinutos} minutos · {nombreEtapa(cita.etapa)}
               </p>
 
               <div className="mt-4 flex flex-wrap gap-2">
                 {numero ? (
-                  <a
+                  <Boton
+                    variante="secundario"
                     href={`https://wa.me/${numero}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex min-h-[44px] items-center rounded-xl border border-white/15 px-4 text-base font-medium text-white transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acento)]"
+                    nuevaPestana
+                    etiquetaAccesible={`Abrir el chat de WhatsApp con ${nombre}`}
                   >
                     {cita.respuestas.whatsapp}
-                  </a>
+                  </Boton>
                 ) : (
-                  <span className="inline-flex min-h-[44px] items-center text-base text-white/50">
+                  <span className="inline-flex min-h-12 items-center text-tinta-suave">
                     No dejó WhatsApp
                   </span>
                 )}
 
                 {recordatorio ? (
-                  <a
-                    href={recordatorio}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex min-h-[44px] items-center rounded-xl px-5 text-base font-semibold text-black transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acento)]"
-                    style={{ backgroundColor: "var(--marca)" }}
-                  >
+                  <Boton href={recordatorio} nuevaPestana>
                     Mandar recordatorio
-                  </a>
+                  </Boton>
                 ) : null}
               </div>
             </li>
@@ -101,32 +90,19 @@ function SinCitas() {
   }
 
   return (
-    <section
-      aria-label="Tu agenda de hoy"
-      className="rounded-2xl border border-white/10 bg-white/[0.04] p-6 sm:p-8"
-    >
-      <h2 className="text-xl font-semibold text-white sm:text-2xl">Hoy tienes el día libre</h2>
-      <p className="mt-3 max-w-prose text-base leading-relaxed text-white/70">
+    <section aria-label="Tu agenda de hoy" className="tarjeta p-6 sm:p-8">
+      <h2 className="text-xl sm:text-2xl">Hoy tienes el día libre</h2>
+      <p className="mt-3 max-w-prose text-tinta-suave">
         Las citas no llegan solas: llegan cuando la gente ve tu liga. Pégala en tu perfil de
         Instagram, en tu firma de correo y en el chat cuando alguien pregunte por{" "}
         {config.oferta.nombre.toLowerCase()}.
       </p>
 
-      <div className="mt-5 flex flex-wrap gap-2">
-        <button
-          type="button"
-          onClick={copiarLiga}
-          className="inline-flex min-h-[48px] items-center rounded-xl px-5 text-base font-semibold text-black transition hover:brightness-110 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acento)]"
-          style={{ backgroundColor: "var(--marca)" }}
-        >
-          {copiado ? "Liga copiada" : "Copiar mi liga"}
-        </button>
-        <a
-          href="/"
-          className="inline-flex min-h-[48px] items-center rounded-xl border border-white/15 px-5 text-base font-medium text-white transition hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--acento)]"
-        >
+      <div className="mt-6 flex flex-wrap gap-3">
+        <Boton onClick={copiarLiga}>{copiado ? "Liga copiada" : "Copiar mi liga"}</Boton>
+        <Boton variante="secundario" href="/">
           Ver cómo se ve
-        </a>
+        </Boton>
       </div>
 
       <p aria-live="polite" className="sr-only">

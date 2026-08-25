@@ -221,12 +221,13 @@ Se escriben con números, **empezando en domingo**:
 
 Ejemplos:
 
-```json
-"dias": [1, 2, 3, 4, 5]      // lunes a viernes
-"dias": [1, 3, 5]            // lunes, miércoles y viernes
-"dias": [2, 4, 6]            // martes, jueves y sábado
-"dias": [6]                  // solo sábados
-```
+| Si abres… | Escribes |
+| --- | --- |
+| Lunes a viernes | `"dias": [1, 2, 3, 4, 5]` |
+| Lunes, miércoles y viernes | `"dias": [1, 3, 5]` |
+| Martes a sábado | `"dias": [2, 3, 4, 5, 6]` |
+| Todos los días | `"dias": [0, 1, 2, 3, 4, 5, 6]` |
+| Solo sábados | `"dias": [6]` |
 
 ### `horaInicio` y `horaFin`
 
@@ -388,8 +389,9 @@ La primera etapa de la lista es donde cae toda cita nueva; déjala como la entra
 Puedes tener las que quieras, pero con más de seis el tablero se vuelve estorboso. Ejemplos
 por giro:
 
+Para una clínica:
+
 ```json
-// Clínica
 "etapas": [
   { "id": "nuevo", "nombre": "Agendado" },
   { "id": "confirmado", "nombre": "Confirmado" },
@@ -397,8 +399,11 @@ por giro:
   { "id": "tratamiento", "nombre": "En tratamiento" },
   { "id": "perdido", "nombre": "No llegó" }
 ]
+```
 
-// Inmobiliaria
+Para una inmobiliaria:
+
+```json
 "etapas": [
   { "id": "nuevo", "nombre": "Interesado" },
   { "id": "confirmado", "nombre": "Visita agendada" },

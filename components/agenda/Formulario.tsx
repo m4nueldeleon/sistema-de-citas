@@ -11,15 +11,13 @@ type Props = {
   alCambiar: (id: string, valor: string) => void;
 };
 
-/** El id del campo en el HTML. Se comparte para poder mover el foco al primer error. */
+/** El id del campo dentro del HTML. Se comparte para poder mover el foco al primer error. */
 export function idDeCampo(id: string): string {
   return `campo-${id}`;
 }
 
-const BASE =
-  "campo w-full rounded-2xl border border-white/12 bg-black/25 px-4 py-3 text-base text-white placeholder:text-white/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--acento)] focus-visible:ring-offset-2 focus-visible:ring-offset-black";
-const UNA_LINEA = `${BASE} min-h-[3.5rem]`;
-const CON_ERROR = "ring-2 ring-red-400/70";
+/* .campo ya trae el tamaño, el borde y el aro de foco (app/globals.css) */
+const MARCA_DE_ERROR = "border-red-400 shadow-[0_0_0_3px_rgba(248,113,113,0.22)]";
 
 function autocompletado(campo: Campo): string {
   if (campo.tipo === "tel") return "tel";
@@ -29,7 +27,7 @@ function autocompletado(campo: Campo): string {
 }
 
 function pista(campo: Campo): string {
-  if (campo.tipo === "tel") return "Ejemplo: 33 1234 5678";
+  if (campo.tipo === "tel") return "33 1234 5678";
   if (campo.tipo === "correo") return "nombre@correo.com";
   return "";
 }
@@ -41,11 +39,12 @@ export function Formulario({ campos, valores, errores, alCambiar }: Props) {
         const id = idDeCampo(campo.id);
         const idError = `${id}-error`;
         const error = errores[campo.id];
-        const valor = valores[campo.id] ?? "";
+        const clases = `campo ${error ? MARCA_DE_ERROR : ""}`;
+
         const comunes = {
           id,
           name: campo.id,
-          value: valor,
+          value: valores[campo.id] ?? "",
           "aria-invalid": error ? true : undefined,
           "aria-describedby": error ? idError : undefined,
           onChange: (
@@ -55,22 +54,15 @@ export function Formulario({ campos, valores, errores, alCambiar }: Props) {
 
         return (
           <div key={campo.id}>
-            <label htmlFor={id} className="mb-2 block text-base font-semibold text-white">
+            <label htmlFor={id} className="etiqueta">
               {campo.etiqueta}
-              {campo.requerido ? null : (
-                <span className="ml-2 font-normal text-white/45">(opcional)</span>
-              )}
+              {campo.requerido ? null : <span className="opcional"> (opcional)</span>}
             </label>
 
             {campo.tipo === "parrafo" ? (
-              <textarea
-                {...comunes}
-                rows={3}
-                autoComplete={autocompletado(campo)}
-                className={`${BASE} ${error ? CON_ERROR : ""}`}
-              />
+              <textarea {...comunes} rows={3} className={clases} />
             ) : campo.tipo === "opciones" ? (
-              <select {...comunes} className={`${UNA_LINEA} ${error ? CON_ERROR : ""}`}>
+              <select {...comunes} className={clases}>
                 <option value="">Elige una opción</option>
                 {(campo.opciones ?? []).map((opcion) => (
                   <option key={opcion} value={opcion}>
@@ -85,7 +77,7 @@ export function Formulario({ campos, valores, errores, alCambiar }: Props) {
                 inputMode={campo.tipo === "tel" ? "tel" : campo.tipo === "correo" ? "email" : "text"}
                 autoComplete={autocompletado(campo)}
                 placeholder={pista(campo)}
-                className={`${UNA_LINEA} ${error ? CON_ERROR : ""}`}
+                className={clases}
               />
             )}
 

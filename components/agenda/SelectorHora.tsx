@@ -8,13 +8,13 @@ type Props = {
   alElegir: (inicio: string) => void;
 };
 
-const BOTON_HORA =
-  "flex min-h-[3.5rem] items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] px-3 text-[17px] font-semibold text-white transition hover:border-white/30 hover:bg-white/[0.07] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--acento)] focus-visible:ring-offset-2 focus-visible:ring-offset-black";
+const BASE =
+  "flex min-h-[3.5rem] items-center justify-center rounded-2xl border px-3 " +
+  "text-[1.0625rem] font-semibold transition duration-150 active:translate-y-px";
 
-const ESTILO_ACTIVO = {
-  borderColor: "var(--marca)",
-  backgroundColor: "color-mix(in srgb, var(--marca) 18%, transparent)",
-};
+const APAGADO = "border-borde bg-superficie text-tinta hover:border-marca";
+const ENCENDIDO =
+  "border-marca bg-[color-mix(in_oklab,var(--marca)_16%,transparent)] text-tinta";
 
 export function SelectorHora({ horarios, activo, alElegir }: Props) {
   return (
@@ -31,8 +31,7 @@ export function SelectorHora({ horarios, activo, alElegir }: Props) {
             type="button"
             aria-pressed={elegido}
             onClick={() => alElegir(inicio)}
-            className={BOTON_HORA}
-            style={elegido ? ESTILO_ACTIVO : undefined}
+            className={`${BASE} ${elegido ? ENCENDIDO : APAGADO}`}
           >
             {textoHora(inicio)}
           </button>
