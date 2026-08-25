@@ -15,12 +15,33 @@ function etapaDe(cita: Cita): string {
   return IDS.has(cita.etapa) ? cita.etapa : (ETAPAS[0]?.id ?? "");
 }
 
+/** Quita acentos y mayúsculas: así "jose" encuentra a "José". */
+function simplificar(texto: string): string {
+  return texto
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+}
+
+function soloDigitos(texto: string): string {
+  return texto.replace(/\D/g, "");
+}
+
+/**
+ * Busca por nombre, WhatsApp o correo. El teléfono se compara sin espacios ni guiones,
+ * porque nadie se acuerda de cómo lo escribió: "3312345678" encuentra "52 33 1234 5678".
+ */
 function coincide(cita: Cita, texto: string): boolean {
-  const aguja = texto.trim().toLowerCase();
+  const aguja = simplificar(texto);
   if (!aguja) return true;
-  return Object.values(cita.respuestas).some((valor) =>
-    String(valor).toLowerCase().includes(aguja),
-  );
+
+  const valores = Object.values(cita.respuestas).map(String);
+  if (valores.some((valor) => simplificar(valor).includes(aguja))) return true;
+
+  const digitos = soloDigitos(texto);
+  if (digitos.length < 3) return false;
+  return valores.some((valor) => soloDigitos(valor).includes(digitos));
 }
 
 export function Tablero({ citas, recargar }: { citas: Cita[]; recargar: () => void }) {

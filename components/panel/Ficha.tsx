@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Boton } from "@/components/ui/Boton";
 import { config } from "@/lib/negocio";
 import { textoLargo } from "@/lib/fechas";
@@ -41,13 +42,40 @@ export function Ficha({
   const [nota, setNota] = useState("");
   const [confirmando, setConfirmando] = useState(false);
   const botonCerrar = useRef<HTMLButtonElement>(null);
+  const cuadro = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const anterior = document.activeElement as HTMLElement | null;
     botonCerrar.current?.focus();
 
+    /* Escape cierra, y el tabulador da vueltas dentro de la ficha:
+       si se saliera, la persona seguiría tecleando en la página de atrás sin verla. */
     function alTeclear(evento: KeyboardEvent) {
-      if (evento.key === "Escape") alCerrar();
+      if (evento.key === "Escape") {
+        alCerrar();
+        return;
+      }
+      if (evento.key !== "Tab") return;
+
+      const caja = cuadro.current;
+      if (!caja) return;
+      const enfocables = caja.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])',
+      );
+      if (enfocables.length === 0) return;
+
+      const primero = enfocables[0];
+      const ultimo = enfocables[enfocables.length - 1];
+      const activo = document.activeElement;
+      const adentro = caja.contains(activo);
+
+      if (evento.shiftKey && (!adentro || activo === primero)) {
+        evento.preventDefault();
+        ultimo.focus();
+      } else if (!evento.shiftKey && (!adentro || activo === ultimo)) {
+        evento.preventDefault();
+        primero.focus();
+      }
     }
     document.addEventListener("keydown", alTeclear);
 
@@ -85,7 +113,7 @@ export function Ficha({
     alCerrar();
   }
 
-  return (
+  const contenido = (
     <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-4">
       <div
         className="absolute inset-0 bg-black/70 backdrop-blur-sm"
@@ -94,6 +122,7 @@ export function Ficha({
       />
 
       <div
+        ref={cuadro}
         role="dialog"
         aria-modal="true"
         aria-labelledby="ficha-titulo"
@@ -246,4 +275,9 @@ export function Ficha({
       </div>
     </div>
   );
+
+  /* La ficha se cuelga directo del final de la página. Así el recuadro siempre
+     queda centrado en la pantalla, aunque la sección de atrás traiga animación. */
+  if (typeof document === "undefined") return null;
+  return createPortal(contenido, document.body);
 }

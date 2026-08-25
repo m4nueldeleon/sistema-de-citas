@@ -196,7 +196,7 @@ export function Confirmacion() {
         <p className="text-base text-tinta-suave">
           Código de tu cita, por si hay que mandarlo a mano:
         </p>
-        <code className="mt-2 block break-all select-all font-mono text-xs leading-relaxed text-tinta-suave">
+        <code className="mt-2 block break-all select-all font-mono text-sm leading-relaxed text-tinta-suave">
           {codigo}
         </code>
         <button

@@ -54,7 +54,7 @@ export function SelectorDia({ dias, claveActiva, alElegir }: Props) {
               className={`${BASE} ${activo ? ENCENDIDO : APAGADO}`}
             >
               <span
-                className={`text-xs font-semibold uppercase tracking-widest ${
+                className={`text-sm font-semibold uppercase tracking-widest ${
                   relativa ? "text-marca" : "text-tinta-suave"
                 }`}
               >
