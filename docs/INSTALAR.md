@@ -17,13 +17,16 @@ Puedes empezar por el A y hacer el B después. No te encierras en ninguno.
 
 1. Crea tu cuenta gratis en [github.com](https://github.com) si aún no tienes una.
 2. Entra a **github.com/m4nueldeleon/sistema-de-citas**.
-3. Arriba a la derecha, aprieta el botón verde que dice **Use this template** y luego
-   **Create a new repository**.
-   - Si no ves ese botón, aprieta **Fork** (está en la misma fila, arriba a la derecha) y
+3. **Inicia sesión en GitHub antes de seguir.** El botón del siguiente paso solo aparece
+   cuando ya entraste a tu cuenta: si estás como visitante, la página se ve completa pero
+   sin ese botón. Es la confusión más común.
+4. Ya con tu sesión abierta, arriba a la derecha aparece el botón verde **Use this
+   template**. Apriétalo y luego **Create a new repository**.
+   - Si aun así no lo ves, aprieta **Fork** (está en la misma fila, arriba a la derecha) y
    luego **Create fork**. Sirve igual.
-4. En **Repository name** escribe un nombre sin espacios, por ejemplo `citas-mi-negocio`.
-5. Déjalo en **Public** (o **Private** si prefieres, funciona igual).
-6. Aprieta **Create repository**.
+5. En **Repository name** escribe un nombre sin espacios, por ejemplo `citas-mi-negocio`.
+6. Déjalo en **Public** (o **Private** si prefieres, funciona igual).
+7. Aprieta **Create repository**.
 
 Ya tienes tu copia. La dirección se ve así:
 `github.com/TU-USUARIO/citas-mi-negocio`

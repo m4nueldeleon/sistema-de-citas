@@ -12,6 +12,10 @@ programar y no pagas nada por publicarlo.
 ---
 
 
+> **Antes de apretar cualquier botón: inicia sesión en GitHub.** El botón verde
+> **Use this template** solo aparece cuando ya entraste a tu cuenta. Si te asomas como
+> visitante, la página se ve completa pero sin ese botón, y parece que algo está mal.
+
 ## Míralo funcionando
 
 - **Muestra en vivo:** https://sistema-de-citas-legendaria.vercel.app (el tablero abre con el código `1234`)
