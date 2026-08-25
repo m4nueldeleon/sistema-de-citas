@@ -1,0 +1,243 @@
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap");
+@import "tailwindcss";
+
+/* ============================================================
+   LOS COLORES DE TU NEGOCIO NO SE CAMBIAN AQUÍ
+
+   Se cambian en un solo lugar: el archivo negocio.config.json,
+   en la parte que dice:
+
+     "marca": {
+       "colorPrincipal": "#E9C36A",
+       "colorAcento": "#6FE3FF"
+     }
+
+   El archivo app/layout.tsx lee esos dos colores y los escribe
+   encima de los de abajo cada vez que abre la página. Lo que ves
+   aquí es solo el respaldo, por si algo falla.
+
+   El resto de los tonos (fondo, superficie, borde, tinta) están
+   pensados para verse bien con cualquier color principal cálido.
+   ============================================================ */
+
+:root {
+  /* Los dos que salen de negocio.config.json */
+  --marca: #e9c36a;
+  --acento: #6fe3ff;
+
+  /* La base oscura cálida */
+  --fondo: #100e0b;
+  --superficie: #1a1611;
+  --borde: #2e271d;
+  --tinta: #f6f1e7;
+  --tinta-suave: #a79b87;
+
+  /* Color del texto que va ENCIMA del color principal (botones) */
+  --tinta-sobre-marca: #17120a;
+
+  --fuente-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --fuente-texto: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  --radio: 18px;
+  --sombra: 0 18px 50px -20px rgb(0 0 0 / 0.75);
+}
+
+/* Conecta nuestros tonos con las clases de Tailwind:
+   bg-fondo, text-marca, border-borde, font-display, etc. */
+@theme inline {
+  --color-fondo: var(--fondo);
+  --color-superficie: var(--superficie);
+  --color-borde: var(--borde);
+  --color-tinta: var(--tinta);
+  --color-tinta-suave: var(--tinta-suave);
+  --color-marca: var(--marca);
+  --color-acento: var(--acento);
+  --color-sobre-marca: var(--tinta-sobre-marca);
+
+  --font-display: var(--fuente-display);
+  --font-texto: var(--fuente-texto);
+
+  --radius-tarjeta: var(--radio);
+}
+
+@layer base {
+  html {
+    /* clip (y no hidden) evita cortar los elementos que se quedan
+       pegados arriba al hacer scroll */
+    overflow-x: clip;
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    overflow-x: clip;
+    min-height: 100svh;
+    margin: 0;
+    background-color: var(--fondo);
+    background-image:
+      radial-gradient(1100px 620px at 50% -14%, color-mix(in oklab, var(--marca) 13%, transparent), transparent 68%),
+      radial-gradient(760px 520px at 88% 6%, color-mix(in oklab, var(--acento) 7%, transparent), transparent 70%);
+    background-repeat: no-repeat;
+    color: var(--tinta);
+    font-family: var(--fuente-texto);
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--fuente-display);
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+
+  p, li {
+    text-wrap: pretty;
+  }
+
+  img, svg, video {
+    max-width: 100%;
+    height: auto;
+  }
+
+  ::selection {
+    background-color: color-mix(in oklab, var(--marca) 35%, transparent);
+    color: var(--tinta);
+  }
+
+  /* El aro de foco: siempre visible para quien navega con teclado */
+  :where(a, button, input, textarea, select, summary, [tabindex]):focus-visible {
+    outline: 3px solid var(--acento);
+    outline-offset: 3px;
+    border-radius: 10px;
+  }
+}
+
+@layer components {
+  .tarjeta {
+    background-color: var(--superficie);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    box-shadow: var(--sombra);
+  }
+
+  .vidrio {
+    background-color: color-mix(in oklab, var(--superficie) 62%, transparent);
+    -webkit-backdrop-filter: blur(14px) saturate(130%);
+    backdrop-filter: blur(14px) saturate(130%);
+    border: 1px solid color-mix(in oklab, var(--tinta) 10%, transparent);
+    border-radius: var(--radio);
+  }
+
+  .titular {
+    font-family: var(--fuente-display);
+    font-weight: 600;
+    font-size: clamp(2.15rem, 6.2vw, 3.9rem);
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+    margin: 0;
+  }
+
+  .subtitular {
+    font-family: var(--fuente-texto);
+    font-size: clamp(1.0625rem, 2.4vw, 1.375rem);
+    line-height: 1.6;
+    color: var(--tinta-suave);
+    text-wrap: pretty;
+    margin: 0;
+  }
+
+  /* Etiqueta de un campo del formulario */
+  .etiqueta {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--tinta);
+  }
+
+  .etiqueta .opcional {
+    font-weight: 400;
+    color: var(--tinta-suave);
+  }
+
+  /* Caja de escribir: input, textarea y select */
+  .campo {
+    display: block;
+    width: 100%;
+    min-height: 48px;
+    padding: 12px 14px;
+    font-family: inherit;
+    font-size: 1rem;
+    line-height: 1.4;
+    color: var(--tinta);
+    background-color: color-mix(in oklab, var(--fondo) 78%, #000 22%);
+    border: 1px solid var(--borde);
+    border-radius: 12px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .campo::placeholder {
+    color: color-mix(in oklab, var(--tinta-suave) 72%, transparent);
+  }
+
+  .campo:focus {
+    outline: none;
+    border-color: var(--marca);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--marca) 28%, transparent);
+  }
+
+  textarea.campo {
+    min-height: 128px;
+    line-height: 1.55;
+    resize: vertical;
+  }
+
+  select.campo {
+    appearance: none;
+    padding-right: 42px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a79b87' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 20px 20px;
+  }
+
+  /* Para poner el aro de foco a mano en algo que no es un control */
+  .foco-visible:focus-visible {
+    outline: 3px solid var(--acento);
+    outline-offset: 3px;
+    border-radius: 12px;
+  }
+}
+
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.aparecer {
+  animation: aparecer 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+/* Quien pidió menos movimiento en su equipo, no ve movimiento */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

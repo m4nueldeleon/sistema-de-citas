@@ -1,0 +1,100 @@
+{
+  "negocio": {
+    "nombre": "Tu Negocio",
+    "logoTexto": "TN",
+    "whatsapp": "5213312345678",
+    "correo": "hola@tunegocio.com",
+    "ciudad": "Guadalajara, México",
+    "sitio": "https://tunegocio.com"
+  },
+  "marca": {
+    "colorPrincipal": "#E9C36A",
+    "colorAcento": "#6FE3FF",
+    "modo": "oscuro"
+  },
+  "oferta": {
+    "nombre": "Sesión de diagnóstico",
+    "duracionMinutos": 30,
+    "precioTexto": "Sin costo",
+    "incluye": [
+      "Revisamos dónde se te están cayendo las ventas",
+      "Te digo qué cambiar primero y por qué",
+      "Sales con un plan escrito de 3 pasos"
+    ]
+  },
+  "landing": {
+    "titular": "Consigue más citas sin perseguir a nadie",
+    "subtitular": "Agenda 30 minutos y salimos con un plan claro para tu negocio.",
+    "ctaTexto": "Quiero mi cita",
+    "urgencia": "Solo abro 8 espacios por semana.",
+    "dolores": [
+      { "titulo": "La gente pregunta y no vuelve", "texto": "Contestas, mandas precios y se pierde la conversación." },
+      { "titulo": "Tu agenda depende de tu memoria", "texto": "Apuntas citas en notas, chats y papelitos. Se te encima una y quedas mal." },
+      { "titulo": "No sabes en qué va cada quien", "texto": "No tienes una sola pantalla que te diga a quién le hablas hoy." }
+    ],
+    "beneficios": [
+      { "titulo": "Una liga que agenda sola", "texto": "La pegas en tu perfil y la gente elige su horario sin escribirte." },
+      { "titulo": "Confirmación inmediata", "texto": "Al reservar, la persona ve su cita y te manda el aviso por WhatsApp." },
+      { "titulo": "Un tablero con todo", "texto": "Ves quién viene hoy, quién ya compró y a quién le falta seguimiento." }
+    ],
+    "paraQuien": [
+      "Vendes con una conversación (consultoría, servicios, inmobiliaria, salud, seguros)",
+      "Ya te llega gente pero se te pierde en el chat",
+      "Trabajas solo o con un equipo de menos de 10"
+    ],
+    "noParaQuien": [
+      "Vendes producto de mostrador sin cita",
+      "Buscas una tienda en línea con carrito",
+      "No piensas contestar los mensajes"
+    ],
+    "preguntas": [
+      { "p": "¿Cuánto dura la sesión?", "r": "30 minutos. Empieza y termina a tiempo." },
+      { "p": "¿Es por videollamada o presencial?", "r": "Por videollamada. Te mando la liga al confirmar." },
+      { "p": "¿Y si no puedo el día que aparté?", "r": "Me avisas por WhatsApp y lo movemos." }
+    ],
+    "prueba": {
+      "activa": false,
+      "items": []
+    }
+  },
+  "agenda": {
+    "zonaHoraria": "America/Mexico_City",
+    "dias": [1, 2, 3, 4, 5],
+    "horaInicio": "10:00",
+    "horaFin": "18:00",
+    "duracionMinutos": 30,
+    "anticipacionHoras": 12,
+    "diasAdelante": 14
+  },
+  "formulario": {
+    "campos": [
+      { "id": "nombre", "etiqueta": "¿Cómo te llamas?", "tipo": "texto", "requerido": true },
+      { "id": "whatsapp", "etiqueta": "Tu WhatsApp (con lada)", "tipo": "tel", "requerido": true },
+      { "id": "correo", "etiqueta": "Tu correo", "tipo": "correo", "requerido": false },
+      { "id": "negocio", "etiqueta": "¿A qué te dedicas?", "tipo": "texto", "requerido": false },
+      { "id": "reto", "etiqueta": "¿Qué quieres resolver en la sesión?", "tipo": "parrafo", "requerido": false }
+    ]
+  },
+  "gracias": {
+    "titulo": "Listo, tu lugar está apartado",
+    "mensaje": "Te espero puntual. Guarda la cita en tu calendario y mándame el aviso por WhatsApp para confirmarte.",
+    "pasos": [
+      "Manda el mensaje de WhatsApp (es un toque, ya va escrito)",
+      "Agrega la cita a tu calendario",
+      "Llega 2 minutos antes con una libreta"
+    ]
+  },
+  "crm": {
+    "pin": "1234",
+    "etapas": [
+      { "id": "nuevo", "nombre": "Nuevo" },
+      { "id": "confirmado", "nombre": "Confirmada" },
+      { "id": "atendido", "nombre": "Ya la tuve" },
+      { "id": "ganado", "nombre": "Compró" },
+      { "id": "perdido", "nombre": "No se dio" }
+    ]
+  },
+  "integraciones": {
+    "webhookUrl": ""
+  }
+}
