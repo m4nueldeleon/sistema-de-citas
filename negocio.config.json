@@ -3,9 +3,9 @@
     "nombre": "Tu Negocio",
     "logoTexto": "TN",
     "whatsapp": "5213312345678",
-    "correo": "hola@tunegocio.com",
+    "correo": "hola@example.com",
     "ciudad": "Guadalajara, México",
-    "sitio": "https://tunegocio.com"
+    "sitio": "https://example.com"
   },
   "marca": {
     "colorPrincipal": "#E9C36A",
