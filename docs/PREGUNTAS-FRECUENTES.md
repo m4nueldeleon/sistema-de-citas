@@ -180,7 +180,7 @@ hexadecimal (con `#` y seis caracteres). Hay combinaciones probadas en
 ### ¿Puedo usar mi propio dominio en lugar de `.vercel.app`?
 
 Sí, y es gratis conectarlo (solo pagas el dominio). Está paso a paso en
-[PUBLICAR.md](PUBLICAR.md). Un subdominio como `citas.tunegocio.com` es lo más fácil de
+[PUBLICAR.md](PUBLICAR.md). Un subdominio como `citas.example.com` es lo más fácil de
 conectar y no toca tu sitio actual.
 
 ### ¿Se ve bien en celular?

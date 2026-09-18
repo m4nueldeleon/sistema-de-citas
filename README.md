@@ -61,10 +61,10 @@ El puente entre la persona y tú es un **código de cita**: un texto corto que e
 `CITA-` y que lleva adentro toda la información de la reservación.
 
 ```
-1. La persona entra a tu liga                →  tunegocio.com
+1. La persona entra a tu liga                →  example.com
 2. Elige día y hora y deja sus datos         →  se guarda en SU navegador
 3. Se le abre WhatsApp contigo, ya escrito   →  el mensaje incluye CITA-xxxxxxxxxx
-4. Tú copias ese código del chat             →  lo pegas en tunegocio.com/panel
+4. Tú copias ese código del chat             →  lo pegas en example.com/panel
 5. La cita entra completa, sin teclear nada  →  ahora vive en TU navegador
 ```
 

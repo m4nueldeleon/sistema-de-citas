@@ -25,9 +25,9 @@ algo se rompe.
   "nombre": "Tu Negocio",
   "logoTexto": "TN",
   "whatsapp": "5213312345678",
-  "correo": "hola@tunegocio.com",
+  "correo": "hola@example.com",
   "ciudad": "Guadalajara, México",
-  "sitio": "https://tunegocio.com"
+  "sitio": "https://example.com"
 }
 ```
 
@@ -463,12 +463,12 @@ Atiende lunes a viernes, sesiones de 45 minutos, quiere calificar por facturaci�
 ```json
 {
   "negocio": {
-    "nombre": "Ramírez Consultoría",
+    "nombre": "Consultoría de Negocios",
     "logoTexto": "RC",
     "whatsapp": "5213311112222",
-    "correo": "hola@ramirezconsultoria.com",
+    "correo": "hola@example.com",
     "ciudad": "Guadalajara, México",
-    "sitio": "https://ramirezconsultoria.com"
+    "sitio": "https://example.com"
   },
   "marca": { "colorPrincipal": "#E9C36A", "colorAcento": "#6FE3FF", "modo": "oscuro" },
   "oferta": {
@@ -563,12 +563,12 @@ paciente antes de que llegue.
 ```json
 {
   "negocio": {
-    "nombre": "Dental Aurora",
+    "nombre": "Clínica Dental",
     "logoTexto": "DA",
     "whatsapp": "5218112223333",
-    "correo": "citas@dentalaurora.mx",
+    "correo": "citas@example.com",
     "ciudad": "Monterrey, México",
-    "sitio": "https://dentalaurora.mx"
+    "sitio": "https://example.com"
   },
   "marca": { "colorPrincipal": "#6FE3FF", "colorAcento": "#8FE6C0", "modo": "oscuro" },
   "oferta": {
@@ -661,12 +661,12 @@ presupuesto y forma de pago antes de mover al asesor.
 ```json
 {
   "negocio": {
-    "nombre": "Cumbres Propiedades",
+    "nombre": "Asesoría Inmobiliaria",
     "logoTexto": "CP",
     "whatsapp": "5215544445555",
-    "correo": "asesores@cumbrespropiedades.com",
+    "correo": "asesores@example.com",
     "ciudad": "Ciudad de México",
-    "sitio": "https://cumbrespropiedades.com"
+    "sitio": "https://example.com"
   },
   "marca": { "colorPrincipal": "#C9A227", "colorAcento": "#E8E3D8", "modo": "oscuro" },
   "oferta": {

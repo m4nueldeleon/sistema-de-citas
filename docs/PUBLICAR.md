@@ -42,14 +42,14 @@ correo, en tus mensajes de WhatsApp.
 
 ## Ponerle tu propio dominio
 
-Opcional. Si tienes (o compras) un dominio como `citas.tunegocio.com` o
+Opcional. Si tienes (o compras) un dominio como `citas.example.com` o
 `agendaconmigo.com`, se conecta así:
 
 ### 1. Agrégalo en Vercel
 
 1. En Vercel, entra a tu proyecto.
 2. Aprieta la pestaña **Settings** y en el menú de la izquierda, **Domains**.
-3. Escribe tu dominio en la caja (por ejemplo `citas.tunegocio.com`) y aprieta **Add**.
+3. Escribe tu dominio en la caja (por ejemplo `citas.example.com`) y aprieta **Add**.
 
 ### 2. Copia lo que Vercel te pide
 
@@ -71,7 +71,7 @@ Vercel revisa solo. Cuando el dominio quede, aparece una palomita verde que dice
 Configuration**. Puede tardar entre 10 minutos y unas horas (rara vez más). El candado de
 seguridad se genera solo.
 
-> Consejo práctico: un subdominio como `citas.tunegocio.com` es más fácil de conectar que el
+> Consejo práctico: un subdominio como `citas.example.com` es más fácil de conectar que el
 > dominio principal, y no toca tu sitio actual. Si es tu primera vez, empieza por ahí.
 
 ---
